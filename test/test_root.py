@@ -21,9 +21,7 @@ from . import util
 
 
 class TestRoot(unittest.TestCase):
-    @unittest.skipIf(
-        util.VERSION not in util.VERSIONS,
-        'cannot validate an unrecognized version')
+    @util.skip_if_unrecognized_version
     @util.skip_unless_path_separator_matches
     def test_path(self):
         """path (string, required).
@@ -47,9 +45,7 @@ class TestRoot(unittest.TestCase):
         if util.VERSION == '0.5.0':
             self.assertFalse(os.path.isabs(path), 'root.path MUST be relative')
 
-    @unittest.skipIf(
-        util.VERSION not in util.VERSIONS,
-        'cannot validate an unrecognized version')
+    @util.skip_if_unrecognized_version
     def test_readonly(self):
         """readonly (bool, optional).
 

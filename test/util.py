@@ -58,6 +58,13 @@ else:
             PLATFORM_OS = CONFIG_JSON.get('platform', {}).get('os')
 
 
+def skip_if_unrecognized_version(func):
+    return unittest.skipIf(
+        VERSION not in VERSIONS,
+        'cannot validate an unrecognized version'
+    )(func)
+
+
 def skip_unless_path_separator_matches(func):
     if not PLATFORM_OS:
         return unittest.skip(
