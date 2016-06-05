@@ -24,6 +24,7 @@ class TestRoot(unittest.TestCase):
     @unittest.skipIf(
         util.VERSION not in util.VERSIONS,
         'cannot validate an unrecognized version')
+    @util.skip_unless_path_separator_matches
     def test_path(self):
         """path (string, required).
 

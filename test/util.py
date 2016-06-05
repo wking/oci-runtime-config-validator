@@ -14,6 +14,7 @@
 
 import json
 import os
+import unittest
 
 
 VERSIONS = [  # supported specification versions
@@ -22,7 +23,7 @@ VERSIONS = [  # supported specification versions
 ]
 
 CONFIG_PATH = os.path.join(os.environ.get('BUNDLE', '.'), 'config.json')
-CONFIG_BYTES = CONFIG_JSON = VERSION = None
+CONFIG_BYTES = CONFIG_JSON = VERSION = PLATFORM_OS = None
 try:
     with open(CONFIG_PATH, 'rb') as f:
         CONFIG_BYTES = f.read()
@@ -46,3 +47,31 @@ else:
             # https://github.com/opencontainers/runtime-spec/blob/v1.0.0-rc1/config.md#specification-version
             # https://github.com/opencontainers/runtime-spec/blob/v0.5.0/config.md#specification-version
             VERSION = CONFIG_JSON.get('ociVersion')
+
+            # platform.os (string, required) ...
+            # Bundles SHOULD use, and runtimes SHOULD understand, os entries
+            # listed in the Go Language document for $GOOS.
+            # https://github.com/opencontainers/runtime-spec/blob/v1.0.0-rc1/config.md#platform
+            # Values for os must be in the list specified by the Go Language
+            # document for $GOOS.
+            # https://github.com/opencontainers/runtime-spec/blob/v0.5.0/config.md#platform-specific-configuration
+            PLATFORM_OS = CONFIG_JSON.get('platform', {}).get('os')
+
+
+def skip_unless_path_separator_matches(func):
+    if not PLATFORM_OS:
+        return unittest.skip(
+            'this test uses path manipulation, but we cannot detect the OS '
+            'targeted by the configuration so the path separator is unknown.'
+        )(func)
+    if PLATFORM_OS == 'windows':
+        target_separator = '\\'
+    else:
+        target_separator = '/'
+    return unittest.skipUnless(
+        os.path.sep == target_separator,
+        reason=(
+            'this test uses path manipulation, but the configuration targets '
+            'an OS with a different path separator than your system.'
+        )
+    )(func)

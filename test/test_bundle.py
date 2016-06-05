@@ -41,6 +41,7 @@ class TestBundle(unittest.TestCase):
         util.VERSION not in util.VERSIONS,
         'cannot test root-filesystem presence with configuration version {}'
         .format(util.VERSION))
+    @util.skip_unless_path_separator_matches
     def test_root(self):
         """The bundle directory MUST contain the root filesystem.
 
